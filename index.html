@@ -1,0 +1,335 @@
+<!doctype html>
+<html lang="en">
+<head>
+    <meta charset="utf-8">
+    <meta name="viewport" content="width=device-width,initial-scale=1">
+    <title>Happy Birthday — Send an Anonymous Wish!</title>
+    <style>
+        :root{--bg:#0f1724;--card:#0b1220;--accent:#ffb86b;--muted:#9aa4b2}
+        *{box-sizing:border-box}
+        body{margin:0;font-family:Inter,system-ui,Arial,sans-serif;background:linear-gradient(180deg,#071229 0%, #071b2f 100%);color:#e6eef8;display:flex;align-items:center;justify-content:center;min-height:100vh;padding:24px}
+        .container{max-width:920px;width:100%;}
+        header{display:grid;grid-template-columns:120px 1fr;gap:20px;align-items:center}
+        .photo{width:120px;height:120px;border-radius:14px;overflow:hidden;flex-shrink:0;border:3px solid rgba(255,255,255,0.06)}
+        .photo img{width:100%;height:100%;object-fit:cover;display:block}
+        h1{margin:0;font-size:1.6rem}
+        p.lead{margin:6px 0 0;color:var(--muted)}
+        .card{background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));padding:18px;border-radius:12px;margin-top:20px;box-shadow:0 6px 20px rgba(2,6,23,0.6)}
+        form{display:grid;gap:12px}
+        input[type=text],textarea{width:100%;padding:10px;border-radius:8px;border:1px solid rgba(255,255,255,0.04);background:transparent;color:inherit;font-size:0.95rem}
+        textarea{min-height:90px;resize:vertical}
+        .row{display:flex;gap:12px}
+        .btn{background:var(--accent);border:none;padding:10px 14px;border-radius:10px;color:#051225;font-weight:600;cursor:pointer}
+        .muted{color:var(--muted);font-size:0.9rem}
+        .messages{display:grid;gap:10px;margin-top:14px}
+        .msg{padding:10px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.02)}
+        .msg .meta{font-size:0.8rem;color:var(--muted);margin-bottom:6px}
+        .empty{color:var(--muted);text-align:center;padding:18px}
+        footer{margin-top:18px;color:var(--muted);font-size:0.85rem;text-align:center}
+        .top-actions{display:flex;gap:8px;align-items:center}
+        label.small{font-size:0.85rem;color:var(--muted);display:flex;gap:8px;align-items:center}
+        .hint{font-size:0.85rem;color:var(--muted)}
+        .toast{position:fixed;right:20px;bottom:20px;background:#0c1b2a;padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 6px 20px rgba(2,6,23,0.6)}
+
+        /* === GALLERY STYLES === */
+        .gallery-container {
+          position: relative;
+          width: 100%;
+          max-width: 900px;
+          height: 300px;
+          margin: 0 auto 30px auto;
+          border-radius: 16px;
+          overflow: hidden;
+          box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+        }
+
+        .gallery-slide img {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          opacity: 0;
+          transition: opacity 1s ease;
+        }
+
+        .gallery-slide img.active {
+          opacity: 1;
+        }
+
+        .gallery-btn {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          background: rgba(0,0,0,0.4);
+          color: white;
+          border: none;
+          font-size: 24px;
+          padding: 8px 14px;
+          cursor: pointer;
+          border-radius: 50%;
+          user-select: none;
+        }
+
+        .gallery-btn:hover {
+          background: rgba(0,0,0,0.6);
+        }
+
+        .gallery-btn.prev { left: 12px; }
+        .gallery-btn.next { right: 12px; }
+
+        @media(max-width:640px){
+          header{grid-template-columns:1fr;grid-auto-rows:auto;text-align:center}
+          .top-actions{justify-content:center}
+          .photo{margin:0 auto}
+          .gallery-container{height:220px;}
+          .gallery-btn{font-size:20px;}
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+
+    <!-- === PHOTO GALLERY SECTION === -->
+    <div class="gallery-container">
+        <div class="gallery-slide">
+            <img src="C:\Users\dilee\Documents\HappyBirthday\Gallery 1.png" alt="Gallery 1" class="active">
+            <img src="gallery2.jpeg" alt="Gallery 2">
+
+        </div>
+        <button class="gallery-btn prev" id="prevBtn">❮</button>
+        <button class="gallery-btn next" id="nextBtn">❯</button>
+    </div>
+
+    <header>
+        <div class="photo" id="photoHolder">
+            <img src="friend.jpg" alt="Friend photo" id="friendPhoto">
+        </div>
+        <div>
+            <h1 id="title">Happy Birthday, <span id="friendName">Doggy AKA Vikas Reddy</span> 🍻🎉</h1>
+            <p class="lead">Share a short wish or message anonymously — I will display them below. Be kind and use offensive language.</p>
+            <div class="top-actions" style="margin-top:10px">
+                <span class="hint">Share this page link with others so they can add a message.</span>
+            </div>
+        </div>
+    </header>
+
+    <div class="card" style="margin-top:18px">
+        <form id="wishForm">
+            <input type="text" id="name" placeholder="Your name (optional)">
+            <textarea id="message" placeholder="Write your birthday wish here..." required></textarea>
+            <div class="row" style="align-items:center">
+                <label class="small"><input type="checkbox" id="sendAnon" checked> Send anonymously</label>
+                <div style="flex:1"></div>
+                <button class="btn" type="submit">Send Wish</button>
+            </div>
+        </form>
+
+        <div class="messages" id="messages"></div>
+        <div class="empty" id="emptyNote">No wishes yet — be the first to write one!</div>
+    </div>
+
+    <footer>Made with ❤️ By Dileep Ambati</footer>
+</div>
+
+<script>
+
+
+    const firebaseConfig = {
+  apiKey: "AIzaSyBU4YnxYqF3O7bOGeiwoVnWAT7Tulzt6Eg",
+  authDomain: "dileeprajuambati18.firebaseapp.com",
+  projectId: "dileeprajuambati18",
+  storageBucket: "dileeprajuambati18.firebasestorage.app",
+  messagingSenderId: "477845407609",
+  appId: "1:477845407609:web:8c351625a540afaf00d1a8",
+  measurementId: "G-YDP51QLC07"
+};
+
+    const USE_FIREBASE = FIREBASE_CONFIG.apiKey && FIREBASE_CONFIG.apiKey !== "YOUR_API_KEY";
+
+    /***** Minimal profanity filter (client-side) - expandable *****/
+    const badWords = ['fuck','shit','bitch','asshole','motherfucker','bh*nchod','choot'];
+    function containsBadWord(text){
+      const t = text.toLowerCase();
+      return badWords.some(w => t.includes(w));
+    }
+
+    // Message storage interface: either Firestore or localStorage fallback
+    let storage = null;
+    const LocalStorageKey = 'birthday_wishes_v1';
+    const localStore = {
+      async init(){},
+      async add(msg){
+        const arr = JSON.parse(localStorage.getItem(LocalStorageKey) || '[]');
+        arr.unshift(msg);
+        localStorage.setItem(LocalStorageKey, JSON.stringify(arr.slice(0,200)));
+        return msg;
+      },
+      async list(){
+        return JSON.parse(localStorage.getItem(LocalStorageKey) || '[]');
+      }
+    };
+
+    async function initFirebaseAndStore(){
+      await loadScript('https://www.gstatic.com/firebasejs/9.23.0/firebase-app-compat.js');
+      await loadScript('https://www.gstatic.com/firebasejs/9.23.0/firebase-firestore-compat.js');
+      firebase.initializeApp(FIREBASE_CONFIG);
+      const db = firebase.firestore();
+      return {
+        async init(){},
+        async add(msg){
+          const doc = await db.collection('birthday_wishes').add(Object.assign({}, msg, {createdAt: firebase.firestore.FieldValue.serverTimestamp()}));
+          const saved = await db.collection('birthday_wishes').doc(doc.id).get();
+          return saved.data();
+        },
+        async list(){
+          const snap = await db.collection('birthday_wishes').orderBy('createdAt','desc').limit(500).get();
+          const arr = [];
+          snap.forEach(d=>arr.push(d.data()));
+          return arr;
+        }
+      };
+    }
+
+    function loadScript(src){return new Promise((res,rej)=>{const s=document.createElement('script');s.src=src;s.onload=res;s.onerror=rej;document.head.appendChild(s)});}
+
+    async function boot(){
+      if(USE_FIREBASE){
+        try{
+          storage = await initFirebaseAndStore();
+        }catch(e){
+          console.warn('Firebase init failed, using localStorage fallback', e);
+          storage = localStore;
+        }
+      }else{
+        storage = localStore;
+      }
+      await storage.init();
+      renderMessages();
+    }
+
+    function renderMessages(){
+      storage.list().then(arr=>{
+        const container = document.getElementById('messages');
+        const empty = document.getElementById('emptyNote');
+        container.innerHTML = '';
+        if(!arr || arr.length===0){ empty.style.display='block'; return; }
+        empty.style.display='none';
+        arr.forEach(m=>{
+          const el = document.createElement('div');
+          el.className = 'msg';
+          const when = m.createdAt ? (new Date(m.createdAt.seconds ? m.createdAt.seconds*1000 : m.createdAt).toLocaleString()) : new Date().toLocaleString();
+          el.innerHTML = `<div class="meta">${m.name ? escapeHtml(m.name) : 'Anonymous'} • <span class="muted">${escapeHtml(when)}</span></div>
+                        <div class="text">${escapeHtml(m.text)}</div>`;
+          container.appendChild(el);
+        });
+      }).catch(err=>{console.error(err);});
+    }
+
+    function escapeHtml(s){if(!s) return ''; return s.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;').replace(/'/g,'&#039;');}
+
+    document.getElementById('wishForm').addEventListener('submit', async function(e){
+      e.preventDefault();
+      const nameEl = document.getElementById('name');
+      const msgEl = document.getElementById('message');
+      const anon = document.getElementById('sendAnon').checked;
+      const raw = msgEl.value.trim();
+      if(!raw) return alert('Please write a short wish.');
+      if(containsBadWord(raw)) return alert('Please avoid offensive language.');
+      const payload = {
+        name: anon ? '' : (nameEl.value.trim() || ''),
+        text: raw,
+        createdAt: new Date().toISOString()
+      };
+      try{
+        await storage.add(payload);
+        msgEl.value=''; nameEl.value=''; document.getElementById('sendAnon').checked=true;
+        showToast('Wish added 🎉');
+        renderMessages();
+      }catch(err){
+        console.error(err);
+        alert('Failed to add wish. Try again.');
+      }
+    });
+
+    function showToast(txt, timeout=2500){
+      const t = document.createElement('div'); t.className='toast'; t.textContent = txt; document.body.appendChild(t);
+      setTimeout(()=>{t.remove()}, timeout);
+    }
+
+    (function setNameFromQuery(){
+      try{
+        const params = new URLSearchParams(location.search);
+        const n = params.get('name');
+        if(n){ document.getElementById('friendName').textContent = decodeURIComponent(n); }
+      }catch(e){}
+    })();
+
+    (function enablePhotoDrop(){
+      const holder = document.getElementById('photoHolder');
+      holder.addEventListener('dragover', e=>{e.preventDefault(); holder.style.opacity=0.8});
+      holder.addEventListener('dragleave', e=>{holder.style.opacity=1});
+      holder.addEventListener('drop', e=>{
+        e.preventDefault(); holder.style.opacity=1;
+        const f = e.dataTransfer.files[0];
+        if(!f) return;
+        if(!f.type.startsWith('image/')) return alert('Drop an image file');
+        const reader = new FileReader();
+        reader.onload = ()=>{ document.getElementById('friendPhoto').src = reader.result; showToast('Photo updated'); };
+        reader.readAsDataURL(f);
+      });
+    })();
+
+    // === GALLERY SLIDESHOW LOGIC ===
+    let currentIndex = 0;
+    const slides = document.querySelectorAll('.gallery-slide img');
+    const totalSlides = slides.length;
+    const prevBtn = document.getElementById('prevBtn');
+    const nextBtn = document.getElementById('nextBtn');
+    let slideInterval;
+
+    function showSlide(index) {
+      slides.forEach((img, i) => {
+        img.classList.toggle('active', i === index);
+      });
+    }
+
+    function nextSlide() {
+      currentIndex = (currentIndex + 1) % totalSlides;
+      showSlide(currentIndex);
+    }
+
+    function prevSlide() {
+      currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
+      showSlide(currentIndex);
+    }
+
+    function startAutoSlide() {
+      slideInterval = setInterval(nextSlide, 5000);
+    }
+
+    function stopAutoSlide() {
+      clearInterval(slideInterval);
+    }
+
+    prevBtn.addEventListener('click', () => {
+      stopAutoSlide();
+      prevSlide();
+      startAutoSlide();
+    });
+
+    nextBtn.addEventListener('click', () => {
+      stopAutoSlide();
+      nextSlide();
+      startAutoSlide();
+    });
+
+    // Start the slideshow
+    showSlide(currentIndex);
+    startAutoSlide();
+
+    // Start main app
+    boot();
+</script>
+</body>
+</html>
