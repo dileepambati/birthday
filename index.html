@@ -1,303 +1,416 @@
 <!doctype html>
 <html lang="en">
 <head>
-<meta charset="utf-8">
-<meta name="viewport" content="width=device-width,initial-scale=1">
-    <link rel="icon" type="image/png" href="favicon.png">
-<title>Happy Birthday — Send an Anonymous Wish!</title>
-<style>
-  :root{--bg:#0f1724;--card:#0b1220;--accent:#ffb86b;--muted:#9aa4b2}
-  *{box-sizing:border-box}
-  body{
-    margin:0;
-    font-family:Inter,system-ui,Arial,sans-serif;
-    background:linear-gradient(180deg,#071229 0%, #071b2f 100%);
-    color:#e6eef8;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    min-height:100vh;
-    padding:24px;
-  }
-  .container{max-width:920px;width:100%;}
-  header{display:grid;grid-template-columns:120px 1fr;gap:20px;align-items:center}
-  .photo{width:120px;height:120px;border-radius:14px;overflow:hidden;flex-shrink:0;border:3px solid rgba(255,255,255,0.06)}
-  .photo img{width:100%;height:100%;object-fit:cover;display:block}
-  h1{margin:0;font-size:1.6rem}
-  p.lead{margin:6px 0 0;color:var(--muted)}
-  .card{
-    background:linear-gradient(180deg, rgba(255,255,255,0.02), rgba(255,255,255,0.01));
-    padding:18px;border-radius:12px;margin-top:20px;
-    box-shadow:0 6px 20px rgba(2,6,23,0.6)
-  }
-  form{display:grid;gap:12px}
-  input[type=text],textarea{
-    width:100%;padding:10px;border-radius:8px;
-    border:1px solid rgba(255,255,255,0.04);
-    background:transparent;color:inherit;font-size:0.95rem
-  }
-  textarea{min-height:90px;resize:vertical}
-  .row{display:flex;gap:12px}
-  .btn{
-    background:var(--accent);
-    border:none;padding:10px 14px;
-    border-radius:10px;color:#051225;
-    font-weight:600;cursor:pointer
-  }
-  .muted{color:var(--muted);font-size:0.9rem}
-  .messages{display:grid;gap:10px;margin-top:14px}
-  .msg{padding:10px;border-radius:10px;background:rgba(255,255,255,0.02);border:1px solid rgba(255,255,255,0.02)}
-  .msg .meta{font-size:0.8rem;color:var(--muted);margin-bottom:6px}
-  .empty{color:var(--muted);text-align:center;padding:18px}
-  footer{margin-top:18px;color:var(--muted);font-size:0.85rem;text-align:center}
-  .top-actions{display:flex;gap:8px;align-items:center}
-  label.small{font-size:0.85rem;color:var(--muted);display:flex;gap:8px;align-items:center}
-  .hint{font-size:0.85rem;color:var(--muted)}
-  .toast{position:fixed;right:20px;bottom:20px;background:#0c1b2a;padding:12px;border-radius:8px;border:1px solid rgba(255,255,255,0.03);box-shadow:0 6px 20px rgba(2,6,23,0.6)}
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width,initial-scale=1" />
+    <title>Happy Birthday — Anonymous Wishes</title>
 
-  /* === GALLERY STYLES === */
-  .gallery-container {
-    position: relative;
-    width: 100%;
-    max-width: 900px;
-    height: 300px;
-    margin: 0 auto 30px auto;
-    border-radius: 16px;
-    overflow: hidden;
-    box-shadow: 0 8px 25px rgba(0,0,0,0.4);
-  }
-  .gallery-slide img {
-    position: absolute;
-    width: 100%;
-    height: 100%;
-    object-fit: cover;
-    opacity: 0;
-    transition: opacity 1s ease;
-  }
-  .gallery-slide img.active {
-    opacity: 1;
-  }
-  .gallery-btn {
-    position: absolute;
-    top: 50%;
-    transform: translateY(-50%);
-    background: rgba(0,0,0,0.4);
-    color: white;
-    border: none;
-    font-size: 24px;
-    padding: 8px 14px;
-    cursor: pointer;
-    border-radius: 50%;
-    user-select: none;
-  }
-  .gallery-btn:hover {
-    background: rgba(0,0,0,0.6);
-  }
-  .gallery-btn.prev { left: 12px; }
-  .gallery-btn.next { right: 12px; }
+    <style>
+        :root {
+          --bg-gradient: linear-gradient(180deg,#071229 0%, #071b2f 100%);
+          --card-bg: rgba(255, 255, 255, 0.06);
+          --accent: #ffb86b;
+          --muted: #a0aec0;
+          --border: rgba(255,255,255,0.14);
+        }
 
-  /* Stylish Music Button */
-  #musicButton {
-    position: fixed;
-    top: 20px;
-    right: 25px;
-    padding: 12px 25px;
-    border: none;
-    border-radius: 30px;
-    background: linear-gradient(45deg, #ff6a00, #ee0979);
-    color: white;
-    font-size: 16px;
-    font-weight: 600;
-    cursor: pointer;
-    box-shadow: 0 0 20px rgba(255, 100, 100, 0.5);
-    transition: all 0.3s ease-in-out;
-    z-index: 100;
-  }
-  #musicButton:hover {
-    transform: scale(1.08);
-    box-shadow: 0 0 30px rgba(255, 0, 150, 0.8);
-  }
-  #musicButton:active {
-    transform: scale(0.95);
-  }
+        * { box-sizing: border-box; margin: 0; padding: 0; }
 
-  @media(max-width:640px){
-    header{grid-template-columns:1fr;grid-auto-rows:auto;text-align:center}
-    .top-actions{justify-content:center}
-    .photo{margin:0 auto}
-    .gallery-container{height:220px;}
-    .gallery-btn{font-size:20px;}
-  }
-</style>
+        body {
+          font-family: "Poppins", system-ui, sans-serif;
+          background: var(--bg-gradient);
+          color: #f0f4fa;
+          min-height: 100vh;
+          padding-top: 80px;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+          overflow-x: hidden;
+        }
+
+        .container { max-width: 920px; width: 100%; padding: 0 18px; }
+
+        /* === HEADER === */
+        header {
+          display: flex;
+          align-items: center;
+          gap: 20px;
+          flex-wrap: wrap;
+          text-align: left;
+          margin-bottom: 18px;
+        }
+        .photo { width: 110px; height: 110px; border-radius: 16px; overflow: hidden; border: 2px solid var(--border); }
+        .photo img { width: 100%; height: 100%; object-fit: cover; }
+        h1 { margin: 0; font-size: 1.8rem; color: var(--accent); }
+        p.lead { margin-top: 6px; color: var(--muted); font-size: 0.95rem; }
+
+        /* === GALLERY === */
+        .gallery-container {
+          position: relative;
+          width: 100%;
+          max-width: 900px;
+          height: 300px;
+          margin: 0 auto 20px auto;
+          border-radius: 16px;
+          overflow: hidden;
+          box-shadow: 0 8px 25px rgba(0,0,0,0.4);
+          background: rgba(0,0,0,0.15);
+        }
+        .gallery-slide img {
+          position: absolute;
+          width: 100%;
+          height: 100%;
+          object-fit: cover;
+          opacity: 0;
+          transition: opacity 1s ease;
+        }
+        .gallery-slide img.active { opacity: 1; }
+        .gallery-btn {
+          position: absolute;
+          top: 50%;
+          transform: translateY(-50%);
+          background: rgba(0,0,0,0.45);
+          color: white;
+          border: none;
+          font-size: 24px;
+          padding: 8px 14px;
+          cursor: pointer;
+          border-radius: 50%;
+        }
+        .gallery-btn:hover { background: rgba(0,0,0,0.65); }
+        .gallery-btn.prev { left: 12px; }
+        .gallery-btn.next { right: 12px; }
+
+        /* === MUSIC BUTTON === */
+        #musicButton {
+          position: fixed;
+          top: 20px;
+          right: 25px;
+          padding: 12px 18px;
+          border: none;
+          border-radius: 30px;
+          background: linear-gradient(45deg, #ff6a00, #ee0979);
+          color: white;
+          font-size: 15px;
+          font-weight: 600;
+          cursor: pointer;
+          box-shadow: 0 6px 24px rgba(238,105,125,0.18);
+          z-index: 1200;
+          transition: all 0.25s ease;
+        }
+        #musicButton.playing { background: linear-gradient(45deg,#06beb6,#48b1bf); }
+
+        /* === MODERN FORM CARD === */
+        .card {
+          background: var(--card-bg);
+          backdrop-filter: blur(10px);
+          border: 1px solid var(--border);
+          padding: 20px;
+          border-radius: 14px;
+          box-shadow: 0 8px 30px rgba(0, 0, 0, 0.35);
+          transition: transform .2s ease, box-shadow .2s ease;
+        }
+        .card:hover { transform: translateY(-4px); box-shadow: 0 16px 40px rgba(0,0,0,0.45); }
+
+        .form-header { font-size: 1.05rem; font-weight: 600; margin-bottom: 12px; border-left: 4px solid var(--accent); padding-left: 10px; color: #fff; }
+
+        input[type=text], textarea {
+          width: 100%;
+          padding: 12px 14px;
+          border-radius: 10px;
+          border: 1px solid var(--border);
+          background: rgba(255,255,255,0.03);
+          color: #f0f4fa;
+          font-size: .95rem;
+          margin-bottom: 12px;
+          outline: none;
+          transition: border .2s ease, background .2s ease;
+        }
+        input[type=text]:focus, textarea:focus { border: 1px solid var(--accent); background: rgba(255,255,255,0.06); }
+        textarea { min-height: 90px; resize: vertical; }
+
+        .form-options { display:flex; align-items:center; justify-content:space-between; gap:12px; flex-wrap:wrap; }
+        label { font-size: .9rem; color: var(--muted); display:flex; align-items:center; gap:8px; }
+
+        .btn {
+          background: var(--accent);
+          border: none;
+          padding: 10px 16px;
+          border-radius: 10px;
+          color: #051225;
+          font-weight: 700;
+          cursor: pointer;
+          box-shadow: 0 6px 18px rgba(255,184,107,0.28);
+          transition: transform .15s ease, box-shadow .15s ease;
+        }
+        .btn:hover { transform: translateY(-3px); box-shadow: 0 10px 28px rgba(255,184,107,0.38); }
+
+        .messages { display: grid; gap: 12px; margin-top: 18px; }
+        .msg { padding: 12px 14px; border-radius: 12px; background: rgba(255,255,255,0.04); border:1px solid rgba(255,255,255,0.06); }
+        .msg .meta { font-size: .8rem; color: var(--muted); margin-bottom: 6px; }
+        .empty { color: var(--muted); text-align:center; padding: 14px; font-style:italic; }
+
+        footer { margin-top: 18px; color: var(--muted); font-size: .85rem; text-align: center; }
+
+        /* === CELEBRATION SCREEN === */
+        #celebration-screen {
+          position: fixed;
+          inset: 0;
+          background: radial-gradient(circle at bottom, #020111 20%, #000000 80%);
+          z-index: 9999;
+          overflow: hidden;
+          display: flex;
+          align-items: center;
+          justify-content: center;
+        }
+        #fireworksCanvas { width: 100%; height: 100%; display: block; }
+        #celebration-image {
+          position: absolute;
+          width: 460px;
+          max-width: 85%;
+          height: auto;
+          z-index: 10000;
+          animation: fadeInOut 6s ease-in-out forwards;
+          pointer-events: none;
+        }
+        @keyframes fadeInOut {
+          0% { opacity: 0; transform: scale(0.92); }
+          15% { opacity: 1; transform: scale(1.03); }
+          85% { opacity: 1; transform: scale(1); }
+          100% { opacity: 0; transform: scale(1.08); }
+        }
+
+        #main-content { display: none; opacity: 0; transition: opacity 1.2s ease; width: 100%; max-width: 920px; }
+        @media (max-width:640px) {
+          .photo { width: 86px; height: 86px; }
+          #celebration-image { width: 320px; }
+          .gallery-container { height: 200px; }
+        }
+    </style>
 </head>
 <body>
+<!-- CELEBRATION (fireworks + centered image) -->
+<div id="celebration-screen">
+    <canvas id="fireworksCanvas"></canvas>
+    <img src="doggy.png" alt="Happy Birthday Doggy" id="celebration-image" />
+</div>
 
-<!-- Background Music -->
-<audio id="bgMusic" loop>
-  <source src="music.mp3" type="audio/mpeg">
-</audio>
-<button id="musicButton">▶ Play Music</button>
+<!-- MAIN PAGE (hidden initially) -->
+<div id="main-content">
+    <!-- MUSIC -->
+    <audio id="bgMusic" loop>
+        <source src="music.mp3" type="audio/mpeg" />
+    </audio>
+    <button id="musicButton">▶ Play Music</button>
 
-<div class="container">
+    <div class="container">
+        <!-- GALLERY -->
+        <div class="gallery-container" aria-hidden="false">
+            <div class="gallery-slide">
+                <img src="gallery1.jpg" alt="Gallery 1" class="active" />
+                <img src="gallery2.jpg" alt="Gallery 2" />
+                <img src="gallery3.jpg" alt="Gallery 3" />
+                <img src="gallery4.jpg" alt="Gallery 4" />
+                <img src="gallery5.jpg" alt="Gallery 5" />
+            </div>
+            <button class="gallery-btn prev" id="prevBtn" aria-label="Previous image">❮</button>
+            <button class="gallery-btn next" id="nextBtn" aria-label="Next image">❯</button>
+        </div>
 
-  <!-- === PHOTO GALLERY SECTION === -->
-  <div class="gallery-container">
-    <div class="gallery-slide">
-      <img src="gallery1.jpg" alt="Gallery 1" class="active">
-      <img src="gallery2.jpg" alt="Gallery 2">
+        <!-- HEADER -->
+        <header>
+            <div class="photo"><img src="friend.jpg" alt="Friend photo" /></div>
+            <div>
+                <h1>Happy Birthday, Doggy AKA Vikas Reddy 🎉</h1>
+                <p class="lead">Drop an anonymous birthday message — <strong>Be Kind and use offensive language only!</strong></p>
+                <p class="lead"><strong>Share this page link with others, so they can add a message</strong></p>
+            </div>
+        </header>
 
+        <!-- PROFESSIONAL ANONYMOUS MESSENGER -->
+        <div class="card" role="region" aria-label="Anonymous Message Card">
+            <div class="form-header">💬 Send an Anonymous Wish</div>
+
+            <form id="wishForm">
+                <input type="text" id="name" name="name" placeholder="Your name (optional)" autocomplete="off" />
+                <textarea id="message" name="message" placeholder="Write your birthday wish..." required></textarea>
+
+                <div class="form-options">
+                    <label><input type="checkbox" id="sendAnon" checked /> Send Anonymously</label>
+                    <button class="btn" type="submit">Send Wish ✨</button>
+                </div>
+            </form>
+
+            <div class="messages" id="messages"></div>
+            <div class="empty" id="emptyNote">No wishes yet — be the first to surprise Doggy!</div>
+        </div>
+
+        <footer>Made for my pellam with ❤️ - Dileep Ambati</footer>
     </div>
-    <button class="gallery-btn prev" id="prevBtn">❮</button>
-    <button class="gallery-btn next" id="nextBtn">❯</button>
-  </div>
-
-  <header>
-    <div class="photo" id="photoHolder">
-      <img src="friend.jpg" alt="Friend photo" id="friendPhoto">
-    </div>
-    <div>
-      <h1 id="title">Happy Birthday, <span id="friendName">Doggy AKA Vikas Reddy</span> 🍻🎉</h1>
-      <p class="lead">Share a short wish or message anonymously — I will display them below. Be kind and respectful.</p>
-      <div class="top-actions" style="margin-top:10px">
-        <span class="hint">Share this page link with others so they can add a message.</span>
-      </div>
-    </div>
-  </header>
-
-  <div class="card" style="margin-top:18px">
-    <form id="wishForm">
-      <input type="text" id="name" placeholder="Your name (optional)">
-      <textarea id="message" placeholder="Write your birthday wish here..." required></textarea>
-      <div class="row" style="align-items:center">
-        <label class="small"><input type="checkbox" id="sendAnon" checked> Send anonymously</label>
-        <div style="flex:1"></div>
-        <button class="btn" type="submit">Send Wish</button>
-      </div>
-    </form>
-
-    <div class="messages" id="messages"></div>
-    <div class="empty" id="emptyNote">No wishes yet — be the first to write one!</div>
-  </div>
-
-  <footer>Made with ❤️ By Dileep Ambati</footer>
 </div>
 
 <script>
-  // === MUSIC BUTTON LOGIC ===
-  const audio = document.getElementById("bgMusic");
-  const btn = document.getElementById("musicButton");
-  let isPlaying = false;
-
-  btn.addEventListener("click", () => {
-    if (!isPlaying) {
-      audio.play();
-      isPlaying = true;
-      btn.innerHTML = "⏸ Pause Music";
-      btn.style.background = "linear-gradient(45deg, #06beb6, #48b1bf)";
-    } else {
-      audio.pause();
-      isPlaying = false;
-      btn.innerHTML = "▶ Play Music";
-      btn.style.background = "linear-gradient(45deg, #ff6a00, #ee0979)";
+    /* ---------------- FIREWORKS CELEBRATION ---------------- */
+    const canvas = document.getElementById('fireworksCanvas');
+    const ctx = canvas.getContext('2d');
+    function setCanvasSize() {
+      canvas.width = window.innerWidth;
+      canvas.height = window.innerHeight;
     }
-  });
+    setCanvasSize();
+    window.addEventListener('resize', setCanvasSize);
 
-  // === GALLERY SLIDESHOW LOGIC ===
-  document.addEventListener("DOMContentLoaded", () => {
-    let currentIndex = 0;
-    const slides = document.querySelectorAll(".gallery-slide img");
-    const totalSlides = slides.length;
-    const prevBtn = document.getElementById("prevBtn");
-    const nextBtn = document.getElementById("nextBtn");
-    let slideInterval;
+    let particles = [];
+    function random(min, max) { return Math.random() * (max - min) + min; }
 
-    function showSlide(index) {
-      slides.forEach((img, i) => {
-        img.classList.toggle("active", i === index);
+    class Particle {
+      constructor(x, y, color) {
+        this.x = x; this.y = y; this.color = color;
+        this.size = random(2,4);
+        this.vx = random(-5,5);
+        this.vy = random(-7,2);
+        this.gravity = 0.12;
+        this.alpha = 1;
+      }
+      update() {
+        this.x += this.vx;
+        this.y += this.vy;
+        this.vy += this.gravity;
+        this.alpha -= 0.016;
+      }
+      draw() {
+        ctx.globalAlpha = Math.max(0, this.alpha);
+        ctx.fillStyle = this.color;
+        ctx.beginPath();
+        ctx.arc(this.x, this.y, this.size, 0, Math.PI*2);
+        ctx.fill();
+      }
+    }
+
+    function createBurst() {
+      const x = random(80, canvas.width - 80);
+      const y = random(60, canvas.height / 2);
+      const colors = ["#ff004c","#ffb86b","#00e6ff","#aaff00","#ff0080","#ffffff"];
+      const color = colors[Math.floor(Math.random() * colors.length)];
+      for (let i = 0; i < 50; i++) particles.push(new Particle(x, y, color));
+    }
+
+    function animate() {
+      ctx.fillStyle = "rgba(0,0,0,0.18)";
+      ctx.fillRect(0, 0, canvas.width, canvas.height);
+      for (let i = particles.length - 1; i >= 0; i--) {
+        const p = particles[i];
+        p.update();
+        p.draw();
+        if (p.alpha <= 0) particles.splice(i, 1);
+      }
+      requestAnimationFrame(animate);
+    }
+
+    // start fireworks
+    const fireInterval = setInterval(createBurst, 500);
+    animate();
+
+    /* After 6 seconds hide celebration screen and reveal main content */
+    setTimeout(() => {
+      clearInterval(fireInterval);
+      // Optionally run a few last bursts to finish
+      for (let i = 0; i < 6; i++) setTimeout(createBurst, i * 150);
+      // fade out celebration screen
+      const celeb = document.getElementById('celebration-screen');
+      celeb.style.transition = 'opacity 800ms ease';
+      celeb.style.opacity = '0';
+      setTimeout(() => { celeb.style.display = 'none'; }, 900);
+
+      // show main
+      const main = document.getElementById('main-content');
+      main.style.display = 'block';
+      setTimeout(() => main.style.opacity = 1, 80);
+    }, 6000);
+
+    /* ---------------- MUSIC BUTTON ---------------- */
+    const audio = document.getElementById('bgMusic');
+    const musicBtn = document.getElementById('musicButton');
+    let musicPlaying = false;
+
+    musicBtn.addEventListener('click', () => {
+      if (!musicPlaying) {
+        audio.play().catch(()=>{/* autoplay blocked — user must interact — clicking button already is interaction */});
+        musicPlaying = true;
+        musicBtn.classList.add('playing');
+        musicBtn.textContent = '⏸ Pause Music';
+      } else {
+        audio.pause();
+        musicPlaying = false;
+        musicBtn.classList.remove('playing');
+        musicBtn.textContent = '▶ Play Music';
+      }
+    });
+
+    // Pause audio when celebration-screen is visible to avoid overlapping autoplay rules on some browsers
+    document.addEventListener('visibilitychange', () => {
+      if (document.hidden && musicPlaying) { audio.pause(); musicPlaying = false; musicBtn.classList.remove('playing'); musicBtn.textContent = '▶ Play Music'; }
+    });
+
+    /* ---------------- GALLERY SLIDES ---------------- */
+    (function initGallery() {
+      let currentIndex = 0;
+      const slides = document.querySelectorAll('.gallery-slide img');
+      const total = slides.length;
+      const prevBtn = document.getElementById('prevBtn');
+      const nextBtn = document.getElementById('nextBtn');
+      let slideInterval;
+
+      function show(i) {
+        slides.forEach((img, idx) => img.classList.toggle('active', idx === i));
+      }
+      function next() { currentIndex = (currentIndex + 1) % total; show(currentIndex); }
+      function prev() { currentIndex = (currentIndex - 1 + total) % total; show(currentIndex); }
+
+      function startAuto() {
+        clearInterval(slideInterval);
+        slideInterval = setInterval(next, 6000);
+      }
+
+      prevBtn.addEventListener('click', () => { prev(); startAuto(); });
+      nextBtn.addEventListener('click', () => { next(); startAuto(); });
+
+      show(currentIndex);
+      startAuto();
+    })();
+
+    /* ---------------- ANONYMOUS MESSENGER ---------------- */
+    (function messenger() {
+      const form = document.getElementById('wishForm');
+      const messages = document.getElementById('messages');
+      const emptyNote = document.getElementById('emptyNote');
+
+      form.addEventListener('submit', (e) => {
+        e.preventDefault();
+        const name = document.getElementById('name').value.trim();
+        const text = document.getElementById('message').value.trim();
+        const anon = document.getElementById('sendAnon').checked;
+
+        if (!text) return;
+
+        const entry = document.createElement('div');
+        entry.className = 'msg';
+        const meta = document.createElement('div');
+        meta.className = 'meta';
+        meta.textContent = `${anon ? 'Anonymous' : (name || 'Guest')} — just now`;
+
+        const body = document.createElement('div');
+        body.className = 'text';
+        body.textContent = text;
+
+        entry.appendChild(meta);
+        entry.appendChild(body);
+        messages.prepend(entry);
+
+        emptyNote.style.display = 'none';
+        form.reset();
       });
-    }
-
-    function nextSlide() {
-      currentIndex = (currentIndex + 1) % totalSlides;
-      showSlide(currentIndex);
-    }
-
-    function prevSlide() {
-      currentIndex = (currentIndex - 1 + totalSlides) % totalSlides;
-      showSlide(currentIndex);
-    }
-
-    function startAutoSlide() {
-      stopAutoSlide();
-      slideInterval = setInterval(nextSlide, 6000);
-    }
-
-    function stopAutoSlide() {
-      if (slideInterval) clearInterval(slideInterval);
-    }
-
-    prevBtn.addEventListener("click", () => {
-      stopAutoSlide();
-      prevSlide();
-      startAutoSlide();
-    });
-
-    nextBtn.addEventListener("click", () => {
-      stopAutoSlide();
-      nextSlide();
-      startAutoSlide();
-    });
-
-    showSlide(currentIndex);
-    startAutoSlide();
-  });
-
-  // === WISH FORM LOGIC (Local Storage fallback) ===
-  const LocalStorageKey = 'birthday_wishes_v1';
-  const localStore = {
-    async add(msg){
-      const arr = JSON.parse(localStorage.getItem(LocalStorageKey) || '[]');
-      arr.unshift(msg);
-      localStorage.setItem(LocalStorageKey, JSON.stringify(arr.slice(0,200)));
-      return msg;
-    },
-    async list(){
-      return JSON.parse(localStorage.getItem(LocalStorageKey) || '[]');
-    }
-  };
-
-  function renderMessages(){
-    localStore.list().then(arr=>{
-      const container=document.getElementById('messages');
-      const empty=document.getElementById('emptyNote');
-      container.innerHTML='';
-      if(!arr||arr.length===0){empty.style.display='block';return;}
-      empty.style.display='none';
-      arr.forEach(m=>{
-        const el=document.createElement('div');
-        el.className='msg';
-        const when=new Date(m.createdAt).toLocaleString();
-        el.innerHTML=`<div class="meta">${m.name || 'Anonymous'} • <span class="muted">${when}</span></div>
-                      <div class="text">${m.text}</div>`;
-        container.appendChild(el);
-      });
-    });
-  }
-
-  document.getElementById('wishForm').addEventListener('submit', async e=>{
-    e.preventDefault();
-    const nameEl=document.getElementById('name');
-    const msgEl=document.getElementById('message');
-    const anon=document.getElementById('sendAnon').checked;
-    const raw=msgEl.value.trim();
-    if(!raw) return alert('Please write a short wish.');
-    const payload={name: anon?'':(nameEl.value.trim()||''), text: raw, createdAt: new Date().toISOString()};
-    await localStore.add(payload);
-    msgEl.value=''; nameEl.value=''; document.getElementById('sendAnon').checked=true;
-    renderMessages();
-  });
-
-  renderMessages();
+    })();
 </script>
 </body>
 </html>
